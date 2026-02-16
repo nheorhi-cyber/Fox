@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fox ASCII Animation</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        pre {
+            white-space: pre;
+            font-size: 12px;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <pre id="ascii"></pre>
+
+    <script>
+        let frames = [];
+        let currentFrame = 0;
+
+        fetch('frames.json')
+            .then(response => response.json())
+            .then(data => {
+                frames = data;
+                animate();
+            })
+            .catch(error => console.error('Error loading frames:', error));
+
+        function animate() {
+            if (frames.length > 0) {
+                document.getElementById('ascii').textContent = frames[currentFrame];
+                currentFrame = (currentFrame + 1) % frames.length;
+                setTimeout(animate, 100); // 10 FPS
+            }
+        }
+    </script>
+</body>
+</html>
