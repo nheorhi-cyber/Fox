@@ -29,10 +29,17 @@ except EOFError:
     pass
 
 async def handler(request):
-    async def generate():
-        while True:
-            for frame in frames:
-                yield '\033[2J\033[H' + frame
-                await asyncio.sleep(1 / FPS)
-    
-    return Response(generate(), headers={'Content-Type': 'text/plain'})
+    accept = request.headers.get('accept', '')
+    if 'text/html' in accept:
+        # Return white screen for browsers
+        html = '<!DOCTYPE html><html><head><title>Fox</title></head><body style="background-color: white;"></body></html>'
+        return Response(html, headers={'Content-Type': 'text/html'})
+    else:
+        # Stream ASCII for curl
+        async def generate():
+            while True:
+                for frame in frames:
+                    yield '\033[2J\033[H' + frame
+                    await asyncio.sleep(1 / FPS)
+        
+        return Response(generate(), headers={'Content-Type': 'text/plain'})
